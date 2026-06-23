@@ -47,27 +47,27 @@ class Skill {
 
 class PortfolioData {
   // Personal Info
-  static const String name  = 'Alex Johnson';
+  static const String name  = 'Gokul N R';
   static const String title = 'Flutter Developer & UI Designer';
   static const String intro =
       'I build beautiful, cross-platform apps using Flutter. '
       'Passionate about clean code, great UX, and open source.';
   static const String aboutMe =
-      "Hi! I'm Alex, a software developer with 3 years of experience building "
+      "Hi! I'm Gokul, a software developer with 1 year of experience building "
       'mobile and web applications. I love solving real problems through elegant '
-      'code and intuitive design. When I\'m not coding, you\'ll find me hiking '
+      'code and intuitive design. When I\'m not coding, you\'ll find me reading tech blogs, contributing to open source, '
       'or experimenting with new frameworks.';
 
   // Education
-  static const String degree         = 'B.Sc. Computer Science';
-  static const String university     = 'State University of Technology';
-  static const String graduationYear = '2021';
+  static const String degree         = 'B.Tech. Computer Science';
+  static const String university     = 'APJ Abdul Kalam Technological University';
+  static const String graduationYear = '2028';
 
   // Contact
-  static const String email    = 'dev.aneess@gmail.com';
-  static const String phone    = '+91 xxxxxxxxxx';
-  static const String linkedin = 'linkedin.com/in/aneesan';
-  static const String github   = 'github.com/erTesla';
+  static const String email    = 'dev.gokul123@gmail.com';
+  static const String phone    = '+91 1234567890';
+  static const String linkedin = 'linkedin.com/in/gokulnr';
+  static const String github   = 'github.com/Gokul-123';
 
   // Skills
   static const List<Skill> skills = [
@@ -84,25 +84,22 @@ class PortfolioData {
   // Projects
   static const List<Project> projects = [
     Project(
-      title: 'TaskFlow',
-      description: 'A productivity app with task boards, reminders, and team '
-          'collaboration built with Flutter and Firebase.',
-      technologies: ['Flutter', 'Firebase', 'Hive'],
-      imageLabel: 'TaskFlow',
+      title: 'Growth Lens',
+      description: 'A smart business monitoring platform that helps users track key metrics, visualize performance trends, and gain actionable insights through an intuitive dashboard.',
+      technologies: ['React', 'HTML', 'CSS'],
+      imageLabel: 'Growth Lens',
     ),
     Project(
-      title: 'WeatherNow',
-      description: 'A real-time weather app that fetches data from OpenWeather '
-          'API and displays animated forecasts.',
-      technologies: ['Flutter', 'REST API', 'Provider'],
-      imageLabel: 'WeatherNow',
+      title: 'Virtual Science Lab',
+      description: 'A web-based virtual laboratory designed for students to perform science experiments digitally through interactive simulations, making practical learning accessible anytime, anywhere.',
+      technologies: ['React', 'HTML', 'Simulation Engine'],
+      imageLabel: 'Virtual Science Lab',
     ),
     Project(
-      title: 'ShopLite',
-      description: 'A lightweight e-commerce app with product listings, cart, '
-          'and a mock checkout flow.',
-      technologies: ['Flutter', 'Dart', 'SQLite'],
-      imageLabel: 'ShopLite',
+      title: 'MindMate',
+      description: 'A digital wellbeing application designed to support users with mood tracking, mindfulness activities, and productivity-focused wellness features.',
+      technologies: ['Flutter', 'Figma', 'SQLite'],
+      imageLabel: 'MindMate',
     ),
     Project(
       title: 'Portfolio Website',
@@ -112,43 +109,38 @@ class PortfolioData {
       imageLabel: 'Portfolio',
     ),
     Project(
-      title: 'FitTrack',
-      description: 'A fitness tracker that logs workouts, visualises progress '
-          'with charts, and sends daily reminders.',
-      technologies: ['Flutter', 'Firebase', 'fl_chart'],
-      imageLabel: 'FitTrack',
+      title: 'BugBattle',
+      description: 'A competitive programming platform where users solve coding challenges, improve problem-solving skills, and participate in leaderboard-based competitions.',
+      technologies: ['Flutter', 'Firebase', 'Python'],
+      imageLabel: 'BugBattle',
     ),
     Project(
-      title: 'NewsReader',
-      description: 'An RSS and news aggregator with category filters, '
-          'bookmarks, and offline reading support.',
-      technologies: ['Flutter', 'REST API', 'Bloc'],
-      imageLabel: 'NewsReader',
+      title: 'TaskNest',
+      description: 'A Java Swing-based productivity application that helps users organize tasks, set priorities, and track daily progress through a simple and intuitive interface.',
+      technologies: ['Java', 'Swing', 'SQLite'],
+      imageLabel: 'TaskNest',
     ),
   ];
 
   // Experience
   static const List<Experience> experiences = [
     Experience(
-      company: 'TechCorp Solutions',
-      position: 'Junior Flutter Developer',
-      duration: 'Jun 2023 – Present',
-      description: 'Building and maintaining cross-platform mobile apps for '
-          'enterprise clients. Led the migration of a legacy Android app to Flutter.',
+      company: 'Thiranex',
+      position: 'UI/UX Intern',
+      duration: 'Jun 2026 – Present',
+      description: 'Building and redesigning existing user interfaces to improve usability and aesthetics.',
     ),
     Experience(
-      company: 'StartUp Hub',
-      position: 'Mobile Intern',
-      duration: 'Jan 2023 – May 2023',
-      description: 'Developed UI components for a React Native app and wrote '
-          'unit tests using Jest. Assisted in Firebase integration.',
+      company: 'Infosys Springboard',
+      position: 'AI/ML Intern',
+      duration: 'Feb 2026 – Apr 2026',
+      description: 'Developed an AI Based Facial Skin Analysis Tool.',
     ),
     Experience(
-      company: 'Freelance',
-      position: 'Flutter Developer',
-      duration: '2021 – 2022',
-      description: 'Delivered three client projects: a restaurant ordering app, '
-          'a church events app, and a personal finance tracker.',
+      company: 'MuLearn VAST',
+      position: 'Execom Member',
+      duration: '2025 – Present',
+      description: 'Manages new members and helps them complete new tasks on different levels.',
     ),
   ];
 }
