@@ -23,10 +23,10 @@ class ExperienceSection extends StatelessWidget {
     final bool isDesktop = MediaQuery.of(context).size.width >= 800;
 
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 80 : 24,
-        vertical: 60,
+        vertical: 80,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,71 +70,80 @@ class _TimelineItemHoverWrapperState extends State<_TimelineItemHoverWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    // Distribute accent colors along timeline points
+    Color markerColor = const Color(0xFF4361EE); // Soft Blue
+    if (widget.index == 1) {
+      markerColor = const Color(0xFF7209B7); // Violet
+    } else if (widget.index == 2) {
+      markerColor = const Color(0xFF3F37C9); // Indigo
+    } else if (widget.index >= 3) {
+      markerColor = const Color(0xFF4CC9F0); // Cyan
+    }
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        transform: Matrix4.translationValues(_isHovered ? 10 : 0, 0, 0),
+        duration: const Duration(milliseconds: 250),
+        transform: Matrix4.translationValues(_isHovered ? 8 : 0, 0, 0),
         child: IntrinsicHeight(
-          // IntrinsicHeight makes the Row children adopt the height of the tallest child.
-          // Without it, the vertical line (which uses double.infinity height) would fail.
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Left column: dot + vertical line ─────────────────────────────
+              // ── Left column: dot + vertical line ──
               SizedBox(
                 width: 40,
                 child: Column(
                   children: [
-                    // Coloured dot marker
+                    const SizedBox(height: 6),
+                    // Animated Dot Marker
                     AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: _isHovered ? 20 : 16,
-                      height: _isHovered ? 20 : 16,
+                      duration: const Duration(milliseconds: 200),
+                      width: _isHovered ? 18 : 14,
+                      height: _isHovered ? 18 : 14,
                       decoration: BoxDecoration(
-                        color: _isHovered ? Colors.blue : Colors.blueAccent,
+                        color: markerColor,
                         shape: BoxShape.circle,
-                        boxShadow: _isHovered
-                            ? [
-                                BoxShadow(
-                                  color: Colors.blueAccent.withOpacity(0.5),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                )
-                              ]
-                            : [],
+                        boxShadow: [
+                          BoxShadow(
+                            color: markerColor.withOpacity(_isHovered ? 0.6 : 0.25),
+                            blurRadius: _isHovered ? 10 : 6,
+                            spreadRadius: _isHovered ? 3 : 1,
+                          )
+                        ],
                       ),
                     ),
-                    // Vertical line connecting to the next item (not shown on last item)
+                    const SizedBox(height: 6),
+                    // Vertical line connecting to the next item
                     if (!widget.isLast)
                       Expanded(
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: _isHovered ? 4 : 2,
+                          duration: const Duration(milliseconds: 200),
+                          width: _isHovered ? 3 : 1.5,
                           color: _isHovered
-                              ? Colors.blue.shade200
-                              : Colors.blue.shade100,
+                              ? markerColor.withOpacity(0.5)
+                              : theme.colorScheme.outline.withOpacity(0.5),
                         ),
                       ),
                   ],
                 ),
               ),
 
-              // ── Right column: text content ─────────────────────────────────
+              // ── Right column: text content ──
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 32),
+                  padding: const EdgeInsets.only(left: 16, bottom: 40),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Position title
                       AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 200),
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: _isHovered ? Colors.blue.shade900 : Colors.black87,
+                        style: theme.textTheme.titleLarge!.copyWith(
+                          fontSize: 18,
+                          color: _isHovered ? markerColor : theme.colorScheme.onSurface,
                         ),
                         child: Text(widget.exp.position),
                       ),
@@ -145,37 +154,38 @@ class _TimelineItemHoverWrapperState extends State<_TimelineItemHoverWrapper> {
                         widget.exp.company,
                         style: TextStyle(
                           fontSize: 15,
-                          color: Colors.blue.shade700,
-                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
 
-                      // Duration badge
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                      // Duration badge (Material 3 style)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _isHovered
-                              ? Colors.blue.shade100
-                              : Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(12),
+                          color: markerColor.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: markerColor.withOpacity(0.2),
+                            width: 1,
+                          ),
                         ),
                         child: Text(
                           widget.exp.duration,
                           style: TextStyle(
-                              fontSize: 12, color: Colors.blue.shade900),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: markerColor,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 12),
 
                       // Description
                       Text(
                         widget.exp.description,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           height: 1.6,
                         ),
                       ),

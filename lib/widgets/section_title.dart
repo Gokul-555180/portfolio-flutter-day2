@@ -23,22 +23,28 @@ class SectionTitle extends StatelessWidget {
         // ── Section heading text ─────────────────────────────────────────
         Text(
           text,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
         ),
 
         const SizedBox(height: 8),
 
-        // ── Decorative underline bar ──────────────────────────────────────
-        // A simple colored Container used as an underline accent.
-        // Students: try changing the color, width, or height here!
+        // ── Decorative Google colored underline bar ──────────────────────────────────────
         Container(
-          width: 60,
+          width: 80,
           height: 4,
-          color: Colors.blueAccent,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF4361EE), // Soft Blue
+                Color(0xFF7209B7), // Violet
+                Color(0xFF4CC9F0), // Cyan
+              ],
+            ),
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
 
         const SizedBox(height: 32), // Space below the title before content

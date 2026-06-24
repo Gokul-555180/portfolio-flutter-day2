@@ -1,34 +1,25 @@
-// sections/about_section.dart
-//
-// The ABOUT section displays:
-//   • A short "About Me" paragraph
-//   • Education details
-//   • A skills grid
-//
-// LAYOUT:
-//   On desktop: About text | Education (side by side)
-//   On mobile: stacked vertically
-//   Skills: always a Wrap of Chip widgets below
-
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/portfolio_data.dart';
 import '../widgets/section_title.dart';
+import '../widgets/glass_container.dart';
 
 class AboutSection extends StatelessWidget {
   const AboutSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bool isDesktop = MediaQuery.of(context).size.width >= 800;
 
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 80 : 24,
-        vertical: 60,
+        vertical: 80,
       ),
       child: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 1000),
         curve: Curves.decelerate,
         tween: Tween(begin: 0.0, end: 1.0),
         builder: (context, value, child) {
@@ -43,58 +34,60 @@ class AboutSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Reusable section heading widget
             const SectionTitle(text: 'About Me'),
 
-          // ── About + Education row/column ────────────────────────────────
-          isDesktop
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: _buildAboutText()),
-                    const SizedBox(width: 60),
-                    Expanded(child: _buildEducation()),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildAboutText(),
-                    const SizedBox(height: 32),
-                    _buildEducation(),
-                  ],
-                ),
+            // ── About + Education row/column ──
+            isDesktop
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildAboutText(context)),
+                      const SizedBox(width: 80),
+                      Expanded(child: _buildEducation(context)),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildAboutText(context),
+                      const SizedBox(height: 48),
+                      _buildEducation(context),
+                    ],
+                  ),
 
-          const SizedBox(height: 48),
+            const SizedBox(height: 56),
 
-          // ── Skills ───────────────────────────────────────────────────────
-          const Text(
-            'Skills',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          _buildSkills(),
-        ],
+            // ── Skills ──
+            Text(
+              'Skills',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildSkills(),
+          ],
+        ),
       ),
-    ),
-   );
+    );
   }
 
-  // ── About Me paragraph ─────────────────────────────────────────────────────
-  Widget _buildAboutText() {
+  // ── About Me paragraph ──
+  Widget _buildAboutText(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Who I Am',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 20, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 12),
         Text(
           PortfolioData.aboutMe,
-          style: const TextStyle(
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontSize: 15,
-            color: Colors.black54,
             height: 1.7,
           ),
         ),
@@ -102,61 +95,59 @@ class AboutSection extends StatelessWidget {
     );
   }
 
-  // ── Education block ────────────────────────────────────────────────────────
-  Widget _buildEducation() {
+  // ── Education block ──
+  Widget _buildEducation(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Education',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 20, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 12),
 
-        // A simple Card to visually group the education info.
-        Card(
-          elevation: 1,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Degree name
-                Text(
-                  PortfolioData.degree,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+        GlassContainer(
+          borderRadius: 16,
+          bgOpacity: 0.02,
+          borderOpacity: 0.06,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                PortfolioData.degree,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontSize: 17,
                 ),
-                const SizedBox(height: 6),
-
-                // University name
-                Text(
-                  PortfolioData.university,
-                  style: TextStyle(color: Colors.blue.shade700),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                PortfolioData.university,
+                style: TextStyle(
+                  color: theme.colorScheme.secondary,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 4),
-
-                // Graduation year
-                Text(
-                  'Graduated: ${PortfolioData.graduationYear}',
-                  style: const TextStyle(color: Colors.black45),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Graduated: ${PortfolioData.graduationYear}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.5),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  // ── Skills Wrap ────────────────────────────────────────────────────────────
-  // Groups each skill with a category label using a FilterChip-style appearance.
+  // ── Skills Wrap ──
   Widget _buildSkills() {
     return Wrap(
-      spacing: 10,
-      runSpacing: 10,
+      spacing: 12,
+      runSpacing: 12,
       children: PortfolioData.skills.map((skill) {
         return _SkillChip(skill: skill);
       }).toList(),
@@ -178,49 +169,79 @@ class _SkillChipState extends State<_SkillChip> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    // Choose accent color based on category
+    Color accentColor = const Color(0xFF4361EE); // Soft Blue for Mobile
+    if (widget.skill.category == 'Backend') {
+      accentColor = const Color(0xFF7209B7); // Violet
+    } else if (widget.skill.category == 'Web') {
+      accentColor = const Color(0xFF3F37C9); // Indigo
+    } else if (widget.skill.category == 'Design') {
+      accentColor = const Color(0xFF4CC9F0); // Cyan
+    }
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        transform: Matrix4.translationValues(0, _isHovered ? -3 : 0, 0),
-        decoration: BoxDecoration(
-          color: _isHovered ? Colors.blue.shade50 : Colors.white,
-          border: Border.all(
-              color: _isHovered ? Colors.blueAccent : Colors.blue.shade300),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: _isHovered
-              ? [
-                  BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  )
-                ]
-              : [],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
+        transform: Matrix4.translationValues(0, _isHovered ? -4 : 0, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: _isHovered ? Colors.blueAccent : Colors.blue.shade300,
-                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(_isHovered ? 0.08 : 0.02),
+                border: Border.all(
+                  color: _isHovered 
+                      ? accentColor 
+                      : Colors.white.withOpacity(0.08),
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(100),
+                boxShadow: _isHovered
+                    ? [
+                        BoxShadow(
+                          color: accentColor.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        )
+                      ]
+                    : [],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: accentColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: accentColor.withOpacity(0.4),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.skill.name,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _isHovered ? Colors.white : theme.colorScheme.onSurface.withOpacity(0.8),
+                      fontWeight: _isHovered ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              widget.skill.name,
-              style: TextStyle(
-                fontSize: 14,
-                color: _isHovered ? Colors.blue.shade900 : Colors.black87,
-                fontWeight: _isHovered ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

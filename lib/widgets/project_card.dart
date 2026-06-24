@@ -1,14 +1,7 @@
-// widgets/project_card.dart
-//
-// A reusable card widget that displays one project in the Projects grid.
-// It receives a Project object and renders:
-//   • A coloured image placeholder rectangle
-//   • The project title
-//   • A short description
-//   • Technology chip badges
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/portfolio_data.dart';
+import 'glass_container.dart';
 
 class ProjectCard extends StatefulWidget {
   final Project project;
@@ -24,96 +17,167 @@ class _ProjectCardState extends State<ProjectCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Card adds a white background with a subtle shadow (elevation).
+    final theme = Theme.of(context);
+    
+    // Choose header gradient based on title length or index as a hash
+    final List<Color> headerColors = _getHeaderColors(widget.project.title);
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        transform: Matrix4.translationValues(0, _isHovered ? -8 : 0, 0),
-        child: Card(
-          elevation: _isHovered ? 12 : 2,
-          shadowColor: Colors.blueAccent.withOpacity(0.5),
-          // ClipRRect clips the card's children to its rounded corners.
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+      child: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 20 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          transform: Matrix4.translationValues(0, _isHovered ? -8 : 0, 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered 
+                    ? theme.colorScheme.primary.withOpacity(0.2) 
+                    : Colors.transparent,
+                blurRadius: 20,
+                spreadRadius: 1,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: GlassContainer(
+            borderRadius: 16,
+            bgOpacity: _isHovered ? 0.06 : 0.02,
+            borderOpacity: _isHovered ? 0.25 : 0.06,
+            borderColor: _isHovered 
+                ? theme.colorScheme.primary.withOpacity(0.4) 
+                : Colors.white.withOpacity(0.06),
+            blur: 25,
             child: Column(
-              // crossAxisAlignment.start aligns all children to the left edge.
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Image Placeholder ────────────────────────────────────────
-                // In a real app this would be an Image.network() or Image.asset().
-                // For now it's a coloured box with the project name as a label.
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+                // ── Image Header Gradient ──
+                Container(
                   height: 140,
-                  width: double.infinity, // Fill the full card width
-                  color: _isHovered ? Colors.blue.shade200 : Colors.blue.shade100,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.image_outlined,
-                            size: 40, color: Colors.blue),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.project.imageLabel,
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w600,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: headerColors,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      // Decorative abstract circles in background
+                      Positioned(
+                        right: -20,
+                        top: -20,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.08),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.2),
+                              ),
+                              child: const Icon(
+                                Icons.folder_outlined,
+                                size: 32,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              widget.project.imageLabel,
+                              style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                letterSpacing: 0.5,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                // ── Text content area ─────────────────────────────────────────
+                // ── Text Content ──
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Project title
                       Text(
                         widget.project.title,
-                        style: const TextStyle(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
-                      // Project description
                       Text(
                         widget.project.description,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                          height: 1.5, // Line height for readability
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          height: 1.5,
                         ),
                       ),
+                      const SizedBox(height: 16),
 
-                      const SizedBox(height: 12),
-
-                      // ── Technology chips ─────────────────────────────────────
-                      // Wrap lays out children left-to-right, wrapping to the next
-                      // line when there's no more horizontal space.
+                      // ── Tech Chips ──
                       Wrap(
-                        spacing: 6,  // Horizontal gap between chips
-                        runSpacing: 6, // Vertical gap between chip rows
+                        spacing: 8,
+                        runSpacing: 8,
                         children: widget.project.technologies.map((tech) {
-                          // Chip is a Material Design label badge.
-                          return Chip(
-                            label: Text(
-                              tech,
-                              style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.04),
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: theme.colorScheme.primary.withOpacity(0.2),
+                                width: 1,
+                              ),
                             ),
-                            backgroundColor: Colors.blue.shade50,
-                            padding: EdgeInsets.zero,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            child: Text(
+                              tech,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -126,5 +190,23 @@ class _ProjectCardState extends State<ProjectCard> {
         ),
       ),
     );
+  }
+
+  // Returns matching colors as gradients
+  List<Color> _getHeaderColors(String title) {
+    // Basic hash based on first character code
+    int code = title.isNotEmpty ? title.codeUnitAt(0) : 0;
+    
+    switch (code % 4) {
+      case 0:
+        return [const Color(0xFF4361EE), const Color(0xFF7209B7)]; // Soft Blue to Violet
+      case 1:
+        return [const Color(0xFF7209B7), const Color(0xFF3F37C9)]; // Violet to Indigo
+      case 2:
+        return [const Color(0xFF4361EE), const Color(0xFF4CC9F0)]; // Soft Blue to Cyan
+      case 3:
+      default:
+        return [const Color(0xFF3F37C9), const Color(0xFF4CC9F0)]; // Indigo to Cyan
+    }
   }
 }
