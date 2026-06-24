@@ -27,11 +27,24 @@ class AboutSection extends StatelessWidget {
         horizontal: isDesktop ? 80 : 24,
         vertical: 60,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Reusable section heading widget
-          const SectionTitle(text: 'About Me'),
+      child: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.decelerate,
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 30 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Reusable section heading widget
+            const SectionTitle(text: 'About Me'),
 
           // ── About + Education row/column ────────────────────────────────
           isDesktop
@@ -63,7 +76,8 @@ class AboutSection extends StatelessWidget {
           _buildSkills(),
         ],
       ),
-    );
+    ),
+   );
   }
 
   // ── About Me paragraph ─────────────────────────────────────────────────────
@@ -120,7 +134,7 @@ class AboutSection extends StatelessWidget {
                 // University name
                 Text(
                   PortfolioData.university,
-                  style: TextStyle(color: Colors.blueGrey.shade700),
+                  style: TextStyle(color: Colors.blue.shade700),
                 ),
                 const SizedBox(height: 4),
 
@@ -144,30 +158,71 @@ class AboutSection extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: PortfolioData.skills.map((skill) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.blueGrey.shade300),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Shrink to fit content
-            children: [
-              // Category dot indicator
-              Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.blueGrey,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(skill.name, style: const TextStyle(fontSize: 14)),
-            ],
-          ),
-        );
+        return _SkillChip(skill: skill);
       }).toList(),
+    );
+  }
+}
+
+class _SkillChip extends StatefulWidget {
+  final Skill skill;
+
+  const _SkillChip({required this.skill});
+
+  @override
+  State<_SkillChip> createState() => _SkillChipState();
+}
+
+class _SkillChipState extends State<_SkillChip> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        transform: Matrix4.translationValues(0, _isHovered ? -3 : 0, 0),
+        decoration: BoxDecoration(
+          color: _isHovered ? Colors.blue.shade50 : Colors.white,
+          border: Border.all(
+              color: _isHovered ? Colors.blueAccent : Colors.blue.shade300),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: _isHovered
+              ? [
+                  BoxShadow(
+                    color: Colors.blueAccent.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : [],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _isHovered ? Colors.blueAccent : Colors.blue.shade300,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              widget.skill.name,
+              style: TextStyle(
+                fontSize: 14,
+                color: _isHovered ? Colors.blue.shade900 : Colors.black87,
+                fontWeight: _isHovered ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

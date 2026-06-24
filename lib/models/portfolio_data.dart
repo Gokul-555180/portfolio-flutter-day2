@@ -49,6 +49,16 @@ class PortfolioData {
   // Personal Info
   static const String name  = 'Gokul N R';
   static const String title = 'Flutter Developer & UI Designer';
+  static const String avatarImage = 'assets/profile.jpeg';
+  
+  // ─── Profile Image ──────────────────────────────────────────────────────────
+  // To add your own photo:
+  // 1. You can paste a web URL here (e.g., 'https://your-link.com/photo.png').
+  // 2. OR, create an 'assets' folder in your project root, add your photo 
+  //    (e.g., 'assets/profile.jpg'), register it in pubspec.yaml, and put the path here.
+  // Leave this blank ('') to keep the default profile icon placeholder!
+  // IMPORTANT: Only change this to 'assets/profile.jpg' AFTER you have actually placed the file there!
+  
   static const String intro =
       'I build beautiful, cross-platform apps using Flutter. '
       'Passionate about clean code, great UX, and open source.';
@@ -64,10 +74,10 @@ class PortfolioData {
   static const String graduationYear = '2028';
 
   // Contact
-  static const String email    = 'dev.gokul123@gmail.com';
+  static const String email    = 'gokulnen555@gmail.com';
   static const String phone    = '+91 1234567890';
-  static const String linkedin = 'linkedin.com/in/gokulnr';
-  static const String github   = 'github.com/Gokul-123';
+  static const String linkedin = 'linkedin.com/in/Gokul N R';
+  static const String github   = 'github.com/Gokul-555180';
 
   // Skills
   static const List<Skill> skills = [

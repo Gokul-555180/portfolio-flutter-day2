@@ -38,105 +38,154 @@ class ExperienceSection extends StatelessWidget {
             final int index = entry.key;
             final Experience exp = entry.value;
             final bool isLast = index == PortfolioData.experiences.length - 1;
-            return _buildTimelineItem(exp, isLast: isLast);
+            return _TimelineItemHoverWrapper(
+              exp: exp,
+              isLast: isLast,
+              index: index,
+            );
           }),
         ],
       ),
     );
   }
+}
 
-  // ── Single Timeline Item ────────────────────────────────────────────────────
-  Widget _buildTimelineItem(Experience exp, {required bool isLast}) {
-    return IntrinsicHeight(
-      // IntrinsicHeight makes the Row children adopt the height of the tallest child.
-      // Without it, the vertical line (which uses double.infinity height) would fail.
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Left column: dot + vertical line ─────────────────────────────
-          SizedBox(
-            width: 40,
-            child: Column(
-              children: [
-                // Coloured dot marker
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: const BoxDecoration(
-                    color: Colors.blueGrey,
-                    shape: BoxShape.circle,
+class _TimelineItemHoverWrapper extends StatefulWidget {
+  final Experience exp;
+  final bool isLast;
+  final int index;
+
+  const _TimelineItemHoverWrapper({
+    required this.exp,
+    required this.isLast,
+    required this.index,
+  });
+
+  @override
+  State<_TimelineItemHoverWrapper> createState() => _TimelineItemHoverWrapperState();
+}
+
+class _TimelineItemHoverWrapperState extends State<_TimelineItemHoverWrapper> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        transform: Matrix4.translationValues(_isHovered ? 10 : 0, 0, 0),
+        child: IntrinsicHeight(
+          // IntrinsicHeight makes the Row children adopt the height of the tallest child.
+          // Without it, the vertical line (which uses double.infinity height) would fail.
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Left column: dot + vertical line ─────────────────────────────
+              SizedBox(
+                width: 40,
+                child: Column(
+                  children: [
+                    // Coloured dot marker
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: _isHovered ? 20 : 16,
+                      height: _isHovered ? 20 : 16,
+                      decoration: BoxDecoration(
+                        color: _isHovered ? Colors.blue : Colors.blueAccent,
+                        shape: BoxShape.circle,
+                        boxShadow: _isHovered
+                            ? [
+                                BoxShadow(
+                                  color: Colors.blueAccent.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                )
+                              ]
+                            : [],
+                      ),
+                    ),
+                    // Vertical line connecting to the next item (not shown on last item)
+                    if (!widget.isLast)
+                      Expanded(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: _isHovered ? 4 : 2,
+                          color: _isHovered
+                              ? Colors.blue.shade200
+                              : Colors.blue.shade100,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              // ── Right column: text content ─────────────────────────────────
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Position title
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: _isHovered ? Colors.blue.shade900 : Colors.black87,
+                        ),
+                        child: Text(widget.exp.position),
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Company name
+                      Text(
+                        widget.exp.company,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Duration badge
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _isHovered
+                              ? Colors.blue.shade100
+                              : Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          widget.exp.duration,
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.blue.shade900),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Description
+                      Text(
+                        widget.exp.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                // Vertical line connecting to the next item (not shown on last item)
-                if (!isLast)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      color: Colors.blueGrey.shade100,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // ── Right column: text content ─────────────────────────────────
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Position title
-                  Text(
-                    exp.position,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Company name
-                  Text(
-                    exp.company,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.blueGrey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Duration badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      exp.duration,
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.blueGrey),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Description
-                  Text(
-                    exp.description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                      height: 1.6,
-                    ),
-                  ),
-                ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

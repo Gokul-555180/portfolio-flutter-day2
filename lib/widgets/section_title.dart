@@ -38,7 +38,7 @@ class SectionTitle extends StatelessWidget {
         Container(
           width: 60,
           height: 4,
-          color: Colors.blueGrey,
+          color: Colors.blueAccent,
         ),
 
         const SizedBox(height: 32), // Space below the title before content

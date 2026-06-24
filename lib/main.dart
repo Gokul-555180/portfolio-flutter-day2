@@ -43,9 +43,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // Global theme — students can change the seed color to personalise the app.
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
-        // Default text theme for the whole app
         textTheme: const TextTheme(
           bodyMedium: TextStyle(fontFamily: 'Roboto'),
         ),
@@ -109,6 +108,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
       // ── Navigation AppBar ──────────────────────────────────────────────────
       appBar: AppBar(
         backgroundColor: Colors.white,
+        foregroundColor: Colors.blue.shade900,
         elevation: 1,
         // App name / logo on the left
         title: const Text(

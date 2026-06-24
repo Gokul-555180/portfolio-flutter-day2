@@ -16,12 +16,34 @@
 import 'package:flutter/material.dart';
 import '../models/portfolio_data.dart';
 
-class HeroSection extends StatelessWidget {
+class HeroSection extends StatefulWidget {
   // ScrollController lets us scroll the page when a nav button is tapped.
   // The keys let us scroll to specific sections.
   final Map<String, GlobalKey> sectionKeys;
 
   const HeroSection({super.key, required this.sectionKeys});
+
+  @override
+  State<HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStateMixin {
+  late AnimationController _avatarController;
+
+  @override
+  void initState() {
+    super.initState();
+    _avatarController = AnimationController(
+       vsync: this,
+       duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _avatarController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +54,13 @@ class HeroSection extends StatelessWidget {
     return Container(
       // ── Background colour of the hero ─────────────────────────────────────
       // Students: try a gradient with BoxDecoration instead!
-      color: Colors.blueGrey.shade50,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade50, Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
 
       // Padding: more horizontal space on desktop, less on mobile.
       padding: EdgeInsets.symmetric(
@@ -40,9 +68,22 @@ class HeroSection extends StatelessWidget {
         vertical: 80,
       ),
 
-      child: isDesktop
-          ? _buildDesktopLayout(context)
-          : _buildMobileLayout(context),
+      child: TweenAnimationBuilder<double>(
+        duration: const Duration(seconds: 1),
+        curve: Curves.easeOut,
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 50 * (1 - value)),
+              child: isDesktop
+                  ? _buildDesktopLayout(context)
+                  : _buildMobileLayout(context),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -72,11 +113,38 @@ class HeroSection extends StatelessWidget {
   // ── Profile Image Placeholder ──────────────────────────────────────────────
   Widget _buildAvatar() {
     // CircleAvatar with a large radius acts as the profile photo placeholder.
-    // Students: replace with CircleAvatar(backgroundImage: ...) to add a real photo.
-    return CircleAvatar(
-      radius: 100,
-      backgroundColor: Colors.blueGrey.shade200,
-      child: const Icon(Icons.person, size: 100, color: Colors.white),
+    return AnimatedBuilder(
+      animation: _avatarController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: 1.0 + (_avatarController.value * 0.05),
+          child: child,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blueAccent.withOpacity(0.3),
+              blurRadius: 30,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        child: CircleAvatar(
+  radius: 100,
+  backgroundColor: Colors.blue.shade200,
+  backgroundImage: PortfolioData.avatarImage.isNotEmpty
+      ? (PortfolioData.avatarImage.startsWith('http')
+          ? NetworkImage(PortfolioData.avatarImage)
+          : AssetImage(PortfolioData.avatarImage) as ImageProvider)
+      : null,
+  child: PortfolioData.avatarImage.isEmpty
+      ? const Icon(Icons.person, size: 100, color: Colors.white)
+      : null,
+),
+      ),
     );
   }
 
@@ -103,7 +171,7 @@ class HeroSection extends StatelessWidget {
           PortfolioData.title,
           style: TextStyle(
             fontSize: 20,
-            color: Colors.blueGrey.shade700,
+            color: Colors.blue.shade700,
           ),
         ),
 
@@ -112,7 +180,13 @@ class HeroSection extends StatelessWidget {
         // Short introduction paragraph
         Text(
           PortfolioData.intro,
-          style: const TextStyle(
+          style: TextStyle(
+            shadows: [
+              Shadow(
+                blurRadius: 5,
+                color: Colors.blueAccent.withOpacity(0.5),
+              ),
+            ],
             fontSize: 16,
             color: Colors.black54,
             height: 1.6,
@@ -131,7 +205,7 @@ class HeroSection extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _scrollToSection('projects'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey.shade700,
+                backgroundColor: Colors.blueAccent,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 28, vertical: 16),
@@ -143,6 +217,8 @@ class HeroSection extends StatelessWidget {
             OutlinedButton(
               onPressed: () => _scrollToSection('contact'),
               style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.blueAccent,
+                side: const BorderSide(color: Colors.blueAccent, width: 2),
                 padding: const EdgeInsets.symmetric(
                     horizontal: 28, vertical: 16),
               ),
@@ -158,7 +234,7 @@ class HeroSection extends StatelessWidget {
   // Uses the GlobalKey stored in sectionKeys to find the widget on screen
   // and smoothly scroll to it.
   void _scrollToSection(String key) {
-    final globalKey = sectionKeys[key];
+    final globalKey = widget.sectionKeys[key];
     if (globalKey?.currentContext != null) {
       Scrollable.ensureVisible(
         globalKey!.currentContext!,

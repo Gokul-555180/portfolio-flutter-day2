@@ -27,7 +27,7 @@ class ContactSection extends StatelessWidget {
     final bool isDesktop = MediaQuery.of(context).size.width >= 800;
 
     return Container(
-      color: Colors.blueGrey.shade50,
+      color: Colors.blue.shade50,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 80 : 24,
         vertical: 60,
@@ -49,25 +49,25 @@ class ContactSection extends StatelessWidget {
           const SizedBox(height: 32),
 
           // ── Contact Items ──────────────────────────────────────────────────
-          _buildContactItem(
+          _ContactItemHoverWrapper(
             icon: Icons.email_outlined,
             label: 'Email',
             value: PortfolioData.email,
             url: 'mailto:${PortfolioData.email}',
           ),
-          _buildContactItem(
+          _ContactItemHoverWrapper(
             icon: Icons.phone_outlined,
             label: 'Phone',
             value: PortfolioData.phone,
             url: 'tel:${PortfolioData.phone}',
           ),
-          _buildContactItem(
+          _ContactItemHoverWrapper(
             icon: Icons.link,
             label: 'LinkedIn',
             value: PortfolioData.linkedin,
             url: 'https://${PortfolioData.linkedin}',
           ),
-          _buildContactItem(
+          _ContactItemHoverWrapper(
             icon: Icons.code,
             label: 'GitHub',
             value: PortfolioData.github,
@@ -87,61 +87,95 @@ class ContactSection extends StatelessWidget {
       ),
     );
   }
+}
 
-  // ── Contact Row Builder ────────────────────────────────────────────────────
-  Widget _buildContactItem({
-    required IconData icon,
-    required String label,
-    required String value,
-    required String url,
-  }) {
+class _ContactItemHoverWrapper extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final String url;
+
+  const _ContactItemHoverWrapper({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.url,
+  });
+
+  @override
+  State<_ContactItemHoverWrapper> createState() => _ContactItemHoverWrapperState();
+}
+
+class _ContactItemHoverWrapperState extends State<_ContactItemHoverWrapper> {
+  bool _isHovered = false;
+
+  void _launchUrl() {
+    html.window.open(widget.url, '_blank');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
-        // InkWell adds a ripple tap effect and calls onTap when pressed.
-        onTap: () => _launchUrl(url),
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              // Icon
-              Icon(icon, color: Colors.blueGrey.shade600, size: 22),
-              const SizedBox(width: 16),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: Matrix4.translationValues(_isHovered ? 10 : 0, 0, 0),
+          decoration: BoxDecoration(
+            color: _isHovered ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: Colors.blueAccent.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  ]
+                : [],
+          ),
+          child: InkWell(
+            // InkWell adds a ripple tap effect and calls onTap when pressed.
+            onTap: _launchUrl,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  // Icon
+                  Icon(widget.icon, color: Colors.blueAccent, size: 22),
+                  const SizedBox(width: 16),
 
-              // Label (fixed width so values line up)
-              SizedBox(
-                width: 80,
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black54,
+                  // Label (fixed width so values line up)
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                      widget.label,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              // Tappable value
-              Expanded(
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    color: Colors.blueGrey.shade700,
-                    decoration: TextDecoration.underline,
+                  // Tappable value
+                  Expanded(
+                    child: Text(
+                      widget.value,
+                      style: TextStyle(
+                        color: Colors.blue.shade700,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  // ── URL Launcher ───────────────────────────────────────────────────────────
-  // dart:html's window.open() opens a URL in a new browser tab.
-  // No external package required for Flutter Web.
-  void _launchUrl(String url) {
-    html.window.open(url, '_blank');
   }
 }
